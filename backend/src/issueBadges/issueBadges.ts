@@ -28,8 +28,8 @@ const getBadgeClassId = async (accessToken: string) => {
 			Authorization: `Bearer ${accessToken}`,
 		},
 	});
-	const data = await response.json();
-	return data.result[0].entityId;
+	const data:any = await response.json();
+	return data?.result[0]?.entityId; 
 };
 
 export const issueBadge = async (email: string, name: string, env: Env) => {
