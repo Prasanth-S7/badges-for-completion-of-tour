@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const InfiniteJsonMarquee = () => {
     const generateRandomJson = () => {
@@ -43,9 +43,10 @@ const InfiniteJsonMarquee = () => {
         return JSON.stringify(templates[Math.floor(Math.random() * templates.length)], null, 2);
     };
 
-    const [jsonData, setJsonData] = useState([]);
+    const [jsonData, setJsonData] = useState<any>([]);
 
     useEffect(() => {
+        //@ts-ignore
         const data = Array(10).fill().map(() => generateRandomJson());
         setJsonData(data);
     }, []);
@@ -53,13 +54,12 @@ const InfiniteJsonMarquee = () => {
     return (
         <div className="absolute inset-0 flex justify-center bg-black/40 overflow-hidden">
             <div className="animate-marquee whitespace-nowrap">
-                {jsonData.map((json, index) => (
+                {jsonData.map((json: any, index: number) => (
                     <pre key={index} className="text-white/70 my-4 text-sm font-doto">
                         {json}
                     </pre>
                 ))}
-                {/* Duplicate the content to create seamless loop */}
-                {jsonData.map((json, index) => (
+                {jsonData.map((json: any, index: number) => (
                     <pre key={`duplicate-${index}`} className="text-white/70 my-4 text-sm font-doto">
                         {json}
                     </pre>
