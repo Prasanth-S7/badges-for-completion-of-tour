@@ -37,7 +37,7 @@ export default function CompletionPage() {
             return;
         }
         if(response.status === 200){
-            toast.success(data.msg)
+            toast.success(data.msg + " You will receive the badge in next 30 minutes")
         }
     }
 
