@@ -11,8 +11,8 @@ export interface Env {
 }
 
 export const corsHeaders = {
-	'Access-Control-Allow-Headers': '*',
-	'Access-Control-Allow-Methods': 'GET POST OPTIONS',
+	'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+	'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Max-Age': '86400',
 };
@@ -76,7 +76,7 @@ export default {
 					headers: corsHeaders
 				});
 			case 'GET':
-				return new Response('Hello, world!');
+				return new Response('Server is Healthy!');
 			case 'POST':
 				return await postRequestHandler(request, env);
 			default:
