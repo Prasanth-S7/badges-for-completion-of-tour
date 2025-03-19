@@ -1,4 +1,4 @@
-import { corsHeaders } from "../config/config";
+import { corsHeaders } from "..";
 
 export const postRequestHandler = async (request: Request, env: Env) => {
 	const body: any = await request.json();
@@ -26,7 +26,11 @@ export const postRequestHandler = async (request: Request, env: Env) => {
 				});
 		}
 
+		console.log("reaches after this")
+
 		await env.DB.prepare(`INSERT INTO users (email, name) VALUES (?, ?)`).bind(body.email, body.name).run();
+
+		console.log("inserted")
 
 		return Response.json({
 				msg: 'Your request has been received',

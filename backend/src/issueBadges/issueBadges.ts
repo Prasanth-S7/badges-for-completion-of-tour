@@ -64,6 +64,7 @@ export const issueBadge = async (email: string, name: string, env: Env) => {
 	});
 
     const data = await response.json();
+	console.log(data)
 
 	return data;
 };

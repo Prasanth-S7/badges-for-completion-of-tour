@@ -1,4 +1,4 @@
-async function sendSlackNotification(failedUsers: Array<any>, SlackWebhookUrl: string, customMessage?: string) {
+export async function sendSlackNotification(failedUsers: Array<any>, SlackWebhookUrl: string, customMessage?: string) {
 	const webhookUrl = SlackWebhookUrl;
 
 	let message = '';
