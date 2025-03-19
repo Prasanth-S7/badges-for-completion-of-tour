@@ -8,6 +8,12 @@ export interface Env {
 	BADGR_PASSWORD: string;
 }
 
+export const corsHeaders = {
+	'Access-Control-Allow-Headers': '*',
+	'Access-Control-Allow-Methods': 'GET POST OPTIONS',
+	'Access-Control-Allow-Origin': '*',
+};
+
 export default {
 	async scheduled(event, env, ctx) {
 		try {
@@ -47,6 +53,16 @@ export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const { method } = request;
 		switch (method) {
+			case 'OPTIONS':
+				return new Response(null, {
+					status: 204,
+					headers: {
+						'Access-Control-Allow-Origin': '*',
+						'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+						'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+						'Access-Control-Max-Age': '86400',
+					},
+				});
 			case 'GET':
 				return new Response('Hello, world!');
 			case 'POST':
