@@ -12,7 +12,8 @@
 	},
 	"vars": {
 		"BADGR_USERNAME": "prasanthsampath2005@gmail.com", 
-		"BADGR_PASSWORD": "prasIITian1@"
+		"BADGR_PASSWORD": "prasIITian1@",
+		"SLACK_WEBHOOK_URL": "https://hooks.slack.com/services/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"
 	},
 	"d1_databases": [
 		{

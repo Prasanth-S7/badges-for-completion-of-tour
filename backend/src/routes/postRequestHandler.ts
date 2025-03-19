@@ -1,4 +1,4 @@
-import { corsHeaders } from "..";
+import { corsHeaders } from "../config/config";
 
 export const postRequestHandler = async (request: Request, env: Env) => {
 	const body: any = await request.json();

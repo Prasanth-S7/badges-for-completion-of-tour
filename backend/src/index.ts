@@ -1,53 +1,10 @@
 import { postRequestHandler } from './routes/postRequestHandler';
-import { issueBadge } from './issueBadges/issueBadges';
-
-export interface Env {
-	BINDING_NAME: KVNamespace;
-	DB: D1Database;
-	BADGR_USERNAME: string;
-	BADGR_PASSWORD: string;
-}
-
-export const corsHeaders = {
-	'Access-Control-Allow-Headers': '*',
-	'Access-Control-Allow-Methods': 'GET POST OPTIONS',
-	'Access-Control-Allow-Origin': '*',
-};
+import { cron } from './cron/cron';
+import { corsHeaders } from './config/config';
 
 export default {
 	async scheduled(event, env, ctx) {
-		try {
-			const { results } = await env.DB.prepare('SELECT * FROM users WHERE certificate_received = ?')
-				.bind(false)
-				.all<{ id: number; email: string; name: string; certificate_received: number }>();
-
-			if (results.length > 0) {
-				const batchSize = 10;
-				for (let i = 0; i < results.length; i += batchSize) {
-					const batch = results.slice(i, i + batchSize);
-					const batchResponses: any = await Promise.all(batch.map((user) => issueBadge(user.email, user.name, env)));
-
-					const successfulUsers = batch.filter((user, index) => batchResponses[index].status.success);
-					const failedUsers = batch.filter((user, index) => !batchResponses[index].status.success);
-
-					if (successfulUsers.length > 0) {
-						await env.DB.prepare(
-							'UPDATE users SET certificate_received = ? WHERE id IN (' + successfulUsers.map((user) => '?').join(',') + ')'
-						)
-							.bind(true, ...successfulUsers.map((user) => user.id))
-							.run();
-					}
-
-					if (failedUsers.length > 0) {
-						failedUsers.forEach((user) => {
-							console.error(`Failed to issue badge to ${user.email}: ${batchResponses[batch.indexOf(user)].statusText}`);
-						});
-					}
-				}
-			}
-		} catch (error) {
-			console.error('Error in scheduled function:', error);
-		}
+		cron(env);
 	},
 
 	async fetch(request, env, ctx): Promise<Response> {
@@ -56,15 +13,10 @@ export default {
 			case 'OPTIONS':
 				return new Response(null, {
 					status: 204,
-					headers: {
-						'Access-Control-Allow-Origin': '*',
-						'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-						'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-						'Access-Control-Max-Age': '86400',
-					},
+					headers: corsHeaders
 				});
 			case 'GET':
-				return new Response('Hello, world!');
+				return new Response('Wokers is Healthy!');
 			case 'POST':
 				return await postRequestHandler(request, env);
 			default:
