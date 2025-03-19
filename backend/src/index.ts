@@ -23,7 +23,6 @@ export default {
 			const { results } = await env.DB.prepare('SELECT * FROM users WHERE certificate_received = ?')
 				.bind(false)
 				.all<{ id: number; email: string; name: string; certificate_received: number }>();
-				console.log(results)
 
 			if (results.length > 0) {
 				const batchSize = 10;

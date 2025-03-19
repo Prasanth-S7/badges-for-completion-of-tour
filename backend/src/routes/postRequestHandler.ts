@@ -12,7 +12,6 @@ export const postRequestHandler = async (request: Request, env: Env) => {
 	}
 
 	const { pathname } = new URL(request.url);
-	console.log(body);
 
 	if (pathname === '/api/v1/submitcertificate') {
 		try{
@@ -26,11 +25,7 @@ export const postRequestHandler = async (request: Request, env: Env) => {
 				});
 		}
 
-		console.log("reaches after this")
-
 		await env.DB.prepare(`INSERT INTO users (email, name) VALUES (?, ?)`).bind(body.email, body.name).run();
-
-		console.log("inserted")
 
 		return Response.json({
 				msg: 'Your request has been received',
