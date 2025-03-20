@@ -15,7 +15,9 @@ export const postRequestHandler = async (request: Request, env: Env) => {
 
 	if (pathname === '/api/v1/submitcertificate') {
 		try{
-			const users = (await env.DB.prepare(`SELECT * FROM users WHERE email = ?`).bind(body.email).all()).results;
+			const users = (await env.DB.prepare(`SELECT * FROM users WHERE email = ?`)
+			.bind(body.email)
+			.all()).results;
 
 		if (users.length > 0) {
 			return Response.json({
@@ -25,10 +27,12 @@ export const postRequestHandler = async (request: Request, env: Env) => {
 				});
 		}
 
-		await env.DB.prepare(`INSERT INTO users (email, name) VALUES (?, ?)`).bind(body.email, body.name).run();
+		await env.DB.prepare(`INSERT INTO users (email, name) VALUES (?, ?)`)
+		.bind(body.email, body.name)
+		.run();
 
 		return Response.json({
-				msg: 'Your request has been received',
+				msg: 'Your request has been received.',
 				status: 'success'
 			}, {
 				status: 200, headers: corsHeaders

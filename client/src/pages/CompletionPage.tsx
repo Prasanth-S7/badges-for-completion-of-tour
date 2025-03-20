@@ -9,10 +9,20 @@ export default function CompletionPage() {
         name: "",
         email: "",
     })
+    const [showDialog, setShowDialog] = useState(false)
+    const [dialogMessage, setDialogMessage] = useState("")
+    const [dialogType, setDialogType] = useState("success")
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setState((prev) => ({ ...prev, [name]: value }))
+    }
+
+    const resetForm = () => {
+        setState({
+            name: "",
+            email: "",
+        })
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,24 +31,47 @@ export default function CompletionPage() {
             toast.error("Please fill all the fields")
             return
         }
-        const response = await fetch(`${BACKEND_URL}/submitcertificate`, {
-            body: JSON.stringify({
-                name: formData.name,
-                email: formData.email,
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "POST",
-        })
-        const data = await response.json();
-        if(response.status === 400 || response.status === 500){
-            toast.error(data.msg)
-            return;
+        
+        try {
+            const response = await fetch(`${BACKEND_URL}/submitcertificate`, {
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+            })
+            
+            const data = await response.json();
+            
+            if(response.status === 400 || response.status === 500){
+                toast.error(data.msg)
+                setDialogMessage(data.msg)
+                setDialogType("error")
+                setShowDialog(true)
+                return;
+            }
+            
+            if(response.status === 200){
+                const successMessage = data.msg + ". You will receive the badge in next 30 minutes"
+                toast.success(successMessage)
+                setDialogMessage(successMessage)
+                setDialogType("success")
+                setShowDialog(true)
+                resetForm() 
+            }
+        } catch (error) {
+            toast.error("An error occurred. Please try again.")
+            setDialogMessage("An error occurred. Please try again.")
+            setDialogType("error")
+            setShowDialog(true)
         }
-        if(response.status === 200){
-            toast.success(data.msg + " You will receive the badge in next 30 minutes")
-        }
+    }
+
+    const closeDialog = () => {
+        setShowDialog(false)
     }
 
     return (
@@ -97,6 +130,30 @@ export default function CompletionPage() {
                     </div>
                 </div>
             </div>
+
+            {showDialog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="w-11/12 max-w-md border border-white/20 bg-[#111111] p-6 shadow-xl">
+                        <div className="mb-4 flex items-center">
+                            <span className={`mr-2 text-2xl ${dialogType === "success" ? "text-[#5dfd8a]" : "text-red-500"}`}>
+                                {dialogType === "success" ? "✓" : "✕"}
+                            </span>
+                            <h3 className="text-xl font-medium text-white">
+                                {dialogType === "success" ? "Success" : "Error"}
+                            </h3>
+                        </div>
+                        <p className="mb-6 text-white/80">{dialogMessage}</p>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={closeDialog}
+                                className="cursor-pointer bg-white/10 px-4 py-2 text-white hover:bg-white/20"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
